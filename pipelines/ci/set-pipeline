@@ -31,6 +31,7 @@ fly --target "$target" \
   --var dockerhub-user=eiriniuser \
   --var dockerhub-password="$(pass eirini/docker-hub)" \
   --var github-private-key="$(pass eirini/github/private-config/ssh-key)" \
+  --var github-access-token="$(pass eirini/github/eirinici/access-token)" \
   --var eirini-repo-key="$(pass eirini/github/eirini/ssh-key)" \
   --var eirini-release-repo-key="$(pass eirini/github/eirini-release/ssh-key)" \
   --var eirinifs-private-key="$(pass eirini/github/eirinifs/ssh-key)" \

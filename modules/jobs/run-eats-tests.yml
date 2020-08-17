@@ -1,0 +1,62 @@
+jobs:
+- name: run-eats-tests
+  public: true
+  plan:
+  - in_parallel:
+      steps:
+      - get: cluster-ci-staging-event-created
+        passed:
+        - verify-helm-deployment
+        trigger: true
+      - get: eirini
+      - get: eirini-release
+        trigger: true
+        passed:
+        - verify-helm-deployment
+      - get: ci-resources
+  - in_parallel:
+      steps:
+      - do:
+        - task: download-kubeconfig
+          config:
+              platform: linux
+              image_resource:
+                type: docker-image
+                source:
+                  repository: eirini/ibmcloud
+              inputs:
+              - name:  ci-resources
+              outputs:
+              - name:  kube
+              params:
+                CLUSTER_NAME: ((world-name))
+                IBMCLOUD_ACCOUNT: ((ibmcloud-account))
+                IBMCLOUD_PASSWORD: ((ibmcloud-password))
+                IBMCLOUD_USER: ((ibmcloud-user))
+              run:
+                path: /usr/bin/env
+                args:
+                - bash
+                - -c
+                - (( file "../../inline-tasks/download-kubeconfig.sh" ))
+        - task: run-eats-tests
+          config:
+            platform: linux
+            image_resource:
+              type: docker-image
+              source:
+                repository: eirini/ci
+            inputs:
+            - name:  eirini
+            - name:  kube
+            outputs:
+            - name:  output
+            params:
+                EIRINIUSER_PASSWORD: ((dockerhub-password))
+            run:
+              path: /usr/bin/env
+              args:
+              - bash
+              - -c
+              - (( file "../../inline-tasks/run-eats-tests.sh" ))
+  on_failure: (( grab slack-notification.on_failure ))

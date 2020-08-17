@@ -1,0 +1,12 @@
+resources:
+- name: kind-release
+  type: github-release
+  source:
+    owner: kubernetes-sigs
+    repository: kind
+    access_token: ((github-access-token))
+    pre_release: true
+- name: kind-on-c
+  type: git
+  source:
+    uri: https://github.com/pivotal-k8s/kind-on-c
