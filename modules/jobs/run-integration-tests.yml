@@ -34,7 +34,20 @@ jobs:
         KIND_TESTS: |
           # your actual tests go here!
           kubectl get nodes -o wide
+
+          mkdir -p /usr/local/go
+
+          echo "Installing golang..."
+          curl -sL "https://dl.google.com/go/go1.15.linux-amd64.tar.gz" --output /tmp/go.tar.gz
+          tar xzf /tmp/go.tar.gz -C "/usr/local"
+          rm /tmp/go.tar.gz
+
+          echo "Installing ginkgo..."
+          /usr/local/go/bin/go get -u "github.com/onsi/ginkgo/ginkgo"
+
+          echo "Running tests..."
           cd inputs/eirini
-          ./scripts/run_integration_tests.sh
+          /usr/local/go/bin/go get -u "github.com/onsi/ginkgo/ginkgo"
+          PATH=$PATH:$HOME/go/bin ./scripts/run_integration_tests.sh
   on_failure: (( grab slack-notification.on_failure ))
 
