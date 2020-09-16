@@ -1,0 +1,10 @@
+config:
+  slack:
+    webhook: ((slack-webhook))
+  cluster:
+    name: cf4k8s4a8e
+    domain: ci-envs.eirini.cf-app.com
+  gcp:
+    service-account-json: ((gcp-service-account-json))
+    region: ((gcp-region))
+    zone: ((gcp-zone))
