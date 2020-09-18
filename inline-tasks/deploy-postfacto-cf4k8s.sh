@@ -1,12 +1,20 @@
 #!/bin/bash
-set -euxo pipefail
+set -euo pipefail
 
 export KUBECONFIG="$PWD/kube/config"
 export GOOGLE_APPLICATION_CREDENTIALS="$PWD/kube/service-account.json"
 
 unzip postfacto/package.zip -d postfacto/
 cp eirini-private-config/postfacto-deployment/api/config.js postfacto/package/assets/client/
-sed -i "s/ruby '2.6.3'/ruby '2.6.6'/" postfacto/package/assets/Gemfile
+
+sed -i "s/ruby '2.6.3'.*$//" postfacto/package/assets/Gemfile
+sed -i "s/ruby 2.6.3p62.*$//" postfacto/package/assets/Gemfile.lock
+sed -i "34igem 'therubyracer'" postfacto/package/assets/Gemfile
+sed -i "34igem 'execjs'" postfacto/package/assets/Gemfile
+
+echo "web:  bundle exec rake db:migrate && bundle exec rails s -p \$PORT -e development" >postfacto/package/assets/Procfile
+rm postfacto/package/assets/.ruby-version
+
 redis_password="$(cat redis-password/password)"
 values=eirini-private-config/environments/kube-clusters/cf4k8s4a8e/default-values.yml
 cf_domain="$(goml get -f "$values" -p "system_domain")"
