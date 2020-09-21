@@ -12,8 +12,10 @@ sed -i "s/ruby 2.6.3p62.*$//" postfacto/package/assets/Gemfile.lock
 sed -i "34igem 'therubyracer'" postfacto/package/assets/Gemfile
 sed -i "34igem 'execjs'" postfacto/package/assets/Gemfile
 
-echo "web:  bundle exec rake db:migrate && bundle exec rails s -p \$PORT -e development" >postfacto/package/assets/Procfile
+# echo "web:  bundle exec rake db:migrate && bundle exec rails s -p \$PORT -e development" >postfacto/package/assets/Procfile
 rm postfacto/package/assets/.ruby-version
+
+sed -i "32i  config.hosts << /retro.*\.cf4k8s4a8e\.ci-envs\.eirini\.cf-app\.com/" postfacto/package/assets/config/environments/development.rb
 
 redis_password="$(cat redis-password/password)"
 values=eirini-private-config/environments/kube-clusters/cf4k8s4a8e/default-values.yml
@@ -27,6 +29,10 @@ cf target -o postfacto -s postfacto
 
 # domain="$(goml get -f "$values" -p "eirini.opi.ingress_endpoint")"
 domain="$cf_domain"
+
+if cf app postfacto-api-old; then
+  cf delete -f postfacto-api-old
+fi
 
 if cf app postfacto-api; then
   cf rename postfacto-api postfacto-api-old
@@ -44,12 +50,33 @@ cf push -f eirini-private-config/postfacto-deployment/api/manifest-cf4k8s4a8e.ym
   --var mysql-address="$MYSQL_ADDRESS" \
   --var mysql-password="((mysql-password))"
 
-curl --fail "https://retro-temp.${domain}"
+try_curl() {
+  local url
+  url="$1"
+
+  for i in {1..10}; do
+    if curl -k --fail "$url"; then
+      return
+    fi
+    sleep 5
+  done
+
+  echo "curl $url failed"
+  exit 1
+}
+
+try_curl "https://retro-temp.${domain}"
+
 cf map-route postfacto-api "${domain}" --hostname retro
 cf unmap-route postfacto-api "${domain}" --hostname retro-temp
 
-curl --fail "https://retro.${domain}"
+try_curl "https://retro.${domain}"
+
 if cf app postfacto-api-old; then
   cf unmap-route postfacto-api-old "${domain}" --hostname retro
   cf delete -f postfacto-api-old
 fi
+
+admin_user="((admin-user))"
+admin_password="((admin-password))"
+cf run-task postfacto-api "ADMIN_EMAIL=$admin_user ADMIN_PASSWORD=$admin_password /cnb/lifecycle/launcher -c 'rake admin:create_user'"

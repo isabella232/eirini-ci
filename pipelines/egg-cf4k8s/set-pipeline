@@ -33,4 +33,6 @@ fly -t "$target" \
   --var jefe-client-secret="$(pass eirini/jefe/client-secret)" \
   --var jefe-dbuser-pass="$(pass eirini/jefe/dbuser-pass)" \
   --var jefe-admin-pass="$(pass eirini/jefe/admin-pass)" \
-  --var slack-webhook="$(pass eirini/ci/slack-webhook)"
+  --var slack-webhook="$(pass eirini/ci/slack-webhook)" \
+  --var admin-user="$(pass eirini/postfacto-cf4k8s4a8e/admin-user)" \
+  --var admin-password="$(pass eirini/postfacto-cf4k8s4a8e/admin-password)"
