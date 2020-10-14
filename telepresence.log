@@ -1,0 +1,284 @@
+   0.0 TEL | Telepresence 0.108 launched at Wed Oct 14 09:10:52 2020
+   0.0 TEL |   /usr/bin/telepresence --new-deployment tele --method vpn-tcp --expose 10000 --run bash -c 'INSIDEVAR=insidevalue env'
+   0.0 TEL | uname: uname_result(system='Linux', node='dkarakasilis-eirini-station', release='5.4.0-1025-gcp', version='#25-Ubuntu SMP Fri Sep 11 15:02:15 UTC 2020', machine='x86_64', processor='x86_64')
+   0.0 TEL | Platform: linux
+   0.0 TEL | WSL: False
+   0.0 TEL | Python 3.8.5 (default, Jul 28 2020, 12:59:40)
+   0.0 TEL | [GCC 9.3.0]
+   0.0 TEL | BEGIN SPAN main.py:40(main)
+   0.0 TEL | BEGIN SPAN startup.py:83(set_kube_command)
+   0.0 TEL | Found kubectl -> /usr/local/bin/kubectl
+   0.0 TEL | [1] Capturing: kubectl config current-context
+   0.1 TEL | [1] captured in 0.05 secs.
+   0.1 TEL | [2] Capturing: kubectl --context kind-test version --short
+   0.1 TEL | [2] captured in 0.06 secs.
+   0.1 TEL | [3] Capturing: kubectl --context kind-test config view -o json
+   0.2 TEL | [3] captured in 0.05 secs.
+   0.2 TEL | [4] Capturing: kubectl --context kind-test api-versions
+   0.2 TEL | [4] captured in 0.07 secs.
+   0.2 TEL | Command: kubectl 1.18.9
+   0.2 TEL | Context: kind-test, namespace: default, version: 1.18.2
+   0.2 TEL | Looks like we're in a local VM, e.g. minikube.
+   0.2 TEL | END SPAN startup.py:83(set_kube_command)    0.2s
+   0.2 >>> | Using a Pod instead of a Deployment for the Telepresence proxy. If you experience problems, please file an issue!
+   0.2 >>> | Set the environment variable TELEPRESENCE_USE_DEPLOYMENT to any non-empty value to force the old behavior, e.g.,
+   0.2 >>> |     env TELEPRESENCE_USE_DEPLOYMENT=1 telepresence --run curl hello
+   0.2 >>> | 
+   0.2 TEL | Found ssh -> /usr/bin/ssh
+   0.2 TEL | [5] Capturing: ssh -V
+   0.2 TEL | [5] captured in 0.00 secs.
+   0.2 TEL | Found bash -> /usr/bin/bash
+   0.2 TEL | Found sshuttle-telepresence -> /usr/libexec/sshuttle-telepresence
+   0.2 TEL | Found conntrack -> /usr/sbin/conntrack
+   0.2 TEL | Found iptables -> /usr/sbin/iptables
+   0.2 TEL | Found sudo -> /usr/bin/sudo
+   0.2 TEL | [6] Running: sudo -n echo -n
+   0.3 TEL | [6] ran in 0.01 secs.
+   0.3 TEL | [7] Capturing: sudo iptables --list
+   0.3 TEL | [7] captured in 0.01 secs.
+   0.3 >>> | Starting proxy with method 'vpn-tcp', which has the following limitations: All processes are affected, only one telepresence can run per machine, and you can't use other VPNs. You may need to add cloud hosts and headless services with --also-proxy. For a full list of method limitations see https://telepresence.io/reference/methods.html
+   0.3 TEL | Found sshfs -> /usr/bin/sshfs
+   0.3 TEL | Found fusermount -> /usr/bin/fusermount
+   0.3 >>> | Volumes are rooted at $TELEPRESENCE_ROOT. See https://telepresence.io/howto/volumes.html for details.
+   0.3 TEL | [8] Running: kubectl --context kind-test --namespace default get pods telepresence-connectivity-check --ignore-not-found
+   0.5 TEL | [8] ran in 0.24 secs.
+   0.9 TEL | Scout info: {'latest_version': '0.108', 'application': 'telepresence', 'notices': []}
+   0.9 >>> | Starting network proxy to cluster using new Pod tele
+   0.9 TEL | [9] Running: kubectl --context kind-test --namespace default create -f -
+   1.0   9 | pod/tele created
+   1.0   9 | service/tele created
+   1.0 TEL | [9] ran in 0.17 secs.
+   1.0 TEL | BEGIN SPAN remote.py:109(wait_for_pod)
+   1.0 TEL | [10] Running: kubectl --context kind-test --namespace default wait --for=condition=ready --timeout=60s pod/tele
+   1.7  10 | pod/tele condition met
+   1.7 TEL | [10] ran in 0.63 secs.
+   1.7 TEL | [11] Capturing: kubectl --context kind-test --namespace default get pod tele -o json
+   1.8 TEL | [11] captured in 0.09 secs.
+   1.8 TEL | END SPAN remote.py:109(wait_for_pod)    0.7s
+   1.8 TEL | BEGIN SPAN connect.py:37(connect)
+   1.8 TEL | [12] Launching kubectl logs: kubectl --context kind-test --namespace default logs -f tele --container telepresence --tail=10
+   1.8 TEL | [13] Launching kubectl port-forward: kubectl --context kind-test --namespace default port-forward tele 44987:8022
+   1.8 TEL | [14] Running: ssh -F /dev/null -oStrictHostKeyChecking=no -oUserKnownHostsFile=/dev/null -oConnectTimeout=5 -q -p 44987 telepresence@127.0.0.1 /bin/true
+   1.8 TEL | [14] exit 255 in 0.01 secs.
+   1.9  13 | Forwarding from 127.0.0.1:44987 -> 8022
+   1.9  13 | Forwarding from [::1]:44987 -> 8022
+   2.0 TEL | [15] Running: ssh -F /dev/null -oStrictHostKeyChecking=no -oUserKnownHostsFile=/dev/null -oConnectTimeout=5 -q -p 44987 telepresence@127.0.0.1 /bin/true
+   2.0  13 | Handling connection for 44987
+   2.2  12 | Retrieving this pod's namespace from the process environment
+   2.2  12 | Failed: TELEPRESENCE_CONTAINER_NAMESPACE not set
+   2.2  12 | Reading this pod's namespace from the k8s service account
+   2.2  12 | Pod's namespace is 'default'
+   2.2  12 | Listening...
+   2.2  12 | 2020-10-14T09:10:54+0000 [-] Loading ./forwarder.py...
+   2.2  12 | 2020-10-14T09:10:54+0000 [-] SOCKSv5Factory starting on 9050
+   2.2  12 | 2020-10-14T09:10:54+0000 [socks.SOCKSv5Factory#info] Starting factory <socks.SOCKSv5Factory object at 0x7ff9b0dc48d0>
+   2.2  12 | 2020-10-14T09:10:54+0000 [-] DNSDatagramProtocol starting on 9053
+   2.2  12 | 2020-10-14T09:10:54+0000 [-] Starting protocol <twisted.names.dns.DNSDatagramProtocol object at 0x7ff9b0dc4ac8>
+   2.2  12 | 2020-10-14T09:10:54+0000 [-] Loaded.
+   2.2  12 | 2020-10-14T09:10:54+0000 [twisted.scripts._twistd_unix.UnixAppLogger#info] twistd 20.3.0 (/usr/bin/python3.6 3.6.8) starting up.
+   2.2  12 | 2020-10-14T09:10:54+0000 [twisted.scripts._twistd_unix.UnixAppLogger#info] reactor class: twisted.internet.epollreactor.EPollReactor.
+   2.2 TEL | [15] ran in 0.22 secs.
+   2.2 >>> | Forwarding remote port 10000 to local port 10000.
+   2.2 TEL | [16] Launching SSH port forward (exposed ports): ssh -N -oServerAliveInterval=1 -oServerAliveCountMax=10 -F /dev/null -oStrictHostKeyChecking=no -oUserKnownHostsFile=/dev/null -oConnectTimeout=5 -q -p 44987 telepresence@127.0.0.1 -R '*:10000:127.0.0.1:10000'
+   2.2 >>> | 
+   2.2 TEL | Launching Web server for proxy poll
+   2.2 TEL | [17] Launching SSH port forward (socks and proxy poll): ssh -N -oServerAliveInterval=1 -oServerAliveCountMax=10 -F /dev/null -oStrictHostKeyChecking=no -oUserKnownHostsFile=/dev/null -oConnectTimeout=5 -q -p 44987 telepresence@127.0.0.1 -L127.0.0.1:37951:127.0.0.1:9050 -R9055:127.0.0.1:44559
+   2.3  13 | Handling connection for 44987
+   2.3 TEL | END SPAN connect.py:37(connect)    0.5s
+   2.3 TEL | BEGIN SPAN remote_env.py:29(get_remote_env)
+   2.3 TEL | [18] Capturing: kubectl --context kind-test --namespace default exec tele --container telepresence -- python3 podinfo.py
+   2.3  13 | Handling connection for 44987
+   2.4 TEL | [18] captured in 0.18 secs.
+   2.4 TEL | END SPAN remote_env.py:29(get_remote_env)    0.2s
+   2.4 TEL | BEGIN SPAN mount.py:30(mount_remote_volumes)
+   2.4 TEL | [19] Running: sshfs -p 44987 -F /dev/null -oStrictHostKeyChecking=no -oUserKnownHostsFile=/dev/null -oConnectTimeout=5 telepresence@127.0.0.1:/ /tmp/tel-w5rdy4iz/fs
+   2.4  13 | Handling connection for 44987
+   2.6 TEL | [19] ran in 0.17 secs.
+   2.6 TEL | END SPAN mount.py:30(mount_remote_volumes)    0.2s
+   2.6 TEL | BEGIN SPAN vpn.py:62(connect_sshuttle)
+   2.6 TEL | BEGIN SPAN cidr.py:113(get_proxy_cidrs)
+   2.6 TEL | END SPAN cidr.py:113(get_proxy_cidrs)    0.0s
+   2.6 TEL | [20] Launching sshuttle: sshuttle-telepresence -v --dns --method nat -e 'ssh -F /dev/null -oStrictHostKeyChecking=no -oUserKnownHostsFile=/dev/null -oConnectTimeout=5' -r telepresence@127.0.0.1:44987 --to-ns 127.0.0.1:9053 10.244.0.0/24 10.96.0.0/12
+   2.6 TEL | BEGIN SPAN vpn.py:85(connect_sshuttle,sshuttle-wait)
+   2.6 TEL | Wait for vpn-tcp connection: hellotelepresence-0
+   2.6 TEL | [21] Capturing: python3 -c 'import socket; socket.gethostbyname("hellotelepresence-0")'
+   2.8 TEL | [21] exit 1 in 0.22 secs.
+   2.8 TEL | [22] Capturing: python3 -c 'import socket; socket.gethostbyname("hellotelepresence-0.a.sanity.check.telepresence.io")'
+   3.0 TEL | [22] exit 1 in 0.22 secs.
+   3.1  20 | Starting sshuttle proxy.
+   3.1 TEL | Wait for vpn-tcp connection: hellotelepresence-1
+   3.1 TEL | [23] Capturing: python3 -c 'import socket; socket.gethostbyname("hellotelepresence-1")'
+   3.4 TEL | [23] exit 1 in 0.22 secs.
+   3.4 TEL | [24] Capturing: python3 -c 'import socket; socket.gethostbyname("hellotelepresence-1.a.sanity.check.telepresence.io")'
+   3.6 TEL | [24] exit 1 in 0.22 secs.
+   3.7 TEL | Wait for vpn-tcp connection: hellotelepresence-2
+   3.7 TEL | [25] Capturing: python3 -c 'import socket; socket.gethostbyname("hellotelepresence-2")'
+   3.9 TEL | [25] exit 1 in 0.22 secs.
+   3.9 TEL | [26] Capturing: python3 -c 'import socket; socket.gethostbyname("hellotelepresence-2.a.sanity.check.telepresence.io")'
+   4.0  20 | firewall manager: Starting firewall with Python version 3.8.5
+   4.0  20 | firewall manager: ready method name nat.
+   4.0  20 | IPv6 enabled: False
+   4.0  20 | UDP enabled: False
+   4.0  20 | DNS enabled: True
+   4.0  20 | TCP redirector listening on ('127.0.0.1', 12300).
+   4.0  20 | DNS listening on ('127.0.0.1', 12300).
+   4.0  20 | Starting client with Python version 3.8.5
+   4.0  20 | c : connecting to server...
+   4.0  13 | Handling connection for 44987
+   4.0  20 | Warning: Permanently added '[127.0.0.1]:44987' (ECDSA) to the list of known hosts.
+   4.1 TEL | [26] exit 1 in 0.22 secs.
+   4.2 TEL | Wait for vpn-tcp connection: hellotelepresence-3
+   4.2 TEL | [27] Capturing: python3 -c 'import socket; socket.gethostbyname("hellotelepresence-3")'
+   4.3  20 | Starting server with Python version 3.6.8
+   4.3  20 |  s: latency control setting = True
+   4.3  20 |  s: available routes:
+   4.3  20 |  s:   2/10.244.0.0/24
+   4.3  20 | c : Connected.
+   4.3  20 | firewall manager: setting up.
+   4.3  20 | >> iptables -t nat -N sshuttle-12300
+   4.3  20 | >> iptables -t nat -F sshuttle-12300
+   4.3  20 | >> iptables -t nat -I OUTPUT 1 -j sshuttle-12300
+   4.3  20 | >> iptables -t nat -I PREROUTING 1 -j sshuttle-12300
+   4.3  20 | >> iptables -t nat -A sshuttle-12300 -j RETURN --dest 127.0.0.1/32 -p tcp
+   4.3  20 | >> iptables -t nat -A sshuttle-12300 -j REDIRECT --dest 10.244.0.0/24 -p tcp --to-ports 12300 -m ttl ! --ttl 42
+   4.3  20 | >> iptables -t nat -A sshuttle-12300 -j REDIRECT --dest 10.96.0.0/12 -p tcp --to-ports 12300 -m ttl ! --ttl 42
+   4.3  20 | >> iptables -t nat -A sshuttle-12300 -j REDIRECT --dest 127.0.0.53/32 -p udp --dport 53 --to-ports 12300 -m ttl ! --ttl 42
+   4.3  20 | >> iptables -t nat -A sshuttle-12300 -j REDIRECT --dest 224.0.0.252/32 -p udp --dport 5355 --to-ports 12300 -m ttl ! --ttl 42
+   4.3  20 | conntrack v1.4.5 (conntrack-tools): 0 flow entries have been deleted.
+   4.4 TEL | [27] exit 1 in 0.22 secs.
+   4.4 TEL | [28] Capturing: python3 -c 'import socket; socket.gethostbyname("hellotelepresence-3.a.sanity.check.telepresence.io")'
+   4.5  20 | c : DNS request from ('127.0.0.1', 36764) to None: 79 bytes
+   4.5  12 | 2020-10-14T09:10:57+0000 [stdout#info] Sanity check: b'hellotelepresence-3.a.sanity.check.telepresence.io'
+   4.5  20 | c : DNS request from ('127.0.0.1', 57907) to None: 112 bytes
+   4.5  12 | 2020-10-14T09:10:57+0000 [stdout#info] Set DNS suffix we filter out to: [(b'a', b'sanity', b'check', b'telepresence', b'io', b'c', b'cff-eirini-peace-pods', b'internal')]
+   4.5  12 | 2020-10-14T09:10:57+0000 [stdout#info] Result for b'hellotelepresence-3.a.sanity.check.telepresence.io.c.cff-eirini-peace-pods.internal' is ['127.0.0.1']
+   4.5 TEL | [28] captured in 0.07 secs.
+   4.6 TEL | Wait for vpn-tcp connection: hellotelepresence-4
+   4.6 TEL | [29] Capturing: python3 -c 'import socket; socket.gethostbyname("hellotelepresence-4")'
+   4.6  20 | c : DNS request from ('127.0.0.1', 55460) to None: 81 bytes
+   4.6  12 | 2020-10-14T09:10:57+0000 [stdout#info] Set DNS suffix we filter out to: [(b'a', b'sanity', b'check', b'telepresence', b'io', b'c', b'cff-eirini-peace-pods', b'internal'), (b'c', b'cff-eirini-peace-pods', b'internal')]
+   4.6  12 | 2020-10-14T09:10:57+0000 [stdout#info] Result for b'hellotelepresence-4.c.cff-eirini-peace-pods.internal' is ['127.0.0.1']
+   4.7 TEL | [29] captured in 0.07 secs.
+   4.7 TEL | Resolved hellotelepresence-4. 2 more...
+   4.7 TEL | [30] Capturing: python3 -c 'import socket; socket.gethostbyname("hellotelepresence-4.a.sanity.check.telepresence.io")'
+   4.7  20 | c : DNS request from ('127.0.0.1', 46066) to None: 79 bytes
+   4.7  12 | 2020-10-14T09:10:57+0000 [stdout#info] Sanity check: b'hellotelepresence-4.a.sanity.check.telepresence.io'
+   4.7  20 | c : DNS request from ('127.0.0.1', 51443) to None: 112 bytes
+   4.7  12 | 2020-10-14T09:10:57+0000 [stdout#info] Result for b'hellotelepresence-4.a.sanity.check.telepresence.io.c.cff-eirini-peace-pods.internal' is ['127.0.0.1']
+   4.7 TEL | [30] captured in 0.07 secs.
+   4.8 TEL | Wait for vpn-tcp connection: hellotelepresence-5
+   4.8 TEL | [31] Capturing: python3 -c 'import socket; socket.gethostbyname("hellotelepresence-5")'
+   4.9  20 | c : DNS request from ('127.0.0.1', 42766) to None: 81 bytes
+   4.9  12 | 2020-10-14T09:10:57+0000 [stdout#info] Result for b'hellotelepresence-5.c.cff-eirini-peace-pods.internal' is ['127.0.0.1']
+   4.9 TEL | [31] captured in 0.03 secs.
+   4.9 TEL | Resolved hellotelepresence-5. 1 more...
+   4.9 TEL | [32] Capturing: python3 -c 'import socket; socket.gethostbyname("hellotelepresence-5.a.sanity.check.telepresence.io")'
+   4.9  20 | c : DNS request from ('127.0.0.1', 60232) to None: 79 bytes
+   4.9  12 | 2020-10-14T09:10:57+0000 [stdout#info] Sanity check: b'hellotelepresence-5.a.sanity.check.telepresence.io'
+   4.9  20 | c : DNS request from ('127.0.0.1', 41568) to None: 112 bytes
+   4.9  12 | 2020-10-14T09:10:57+0000 [stdout#info] Result for b'hellotelepresence-5.a.sanity.check.telepresence.io.c.cff-eirini-peace-pods.internal' is ['127.0.0.1']
+   4.9 TEL | [32] captured in 0.03 secs.
+   5.0 TEL | Wait for vpn-tcp connection: hellotelepresence-6
+   5.0 TEL | [33] Capturing: python3 -c 'import socket; socket.gethostbyname("hellotelepresence-6")'
+   5.0  20 | c : DNS request from ('127.0.0.1', 52390) to None: 81 bytes
+   5.0  12 | 2020-10-14T09:10:57+0000 [stdout#info] Result for b'hellotelepresence-6.c.cff-eirini-peace-pods.internal' is ['127.0.0.1']
+   5.0 TEL | [33] captured in 0.03 secs.
+   5.0 TEL | Resolved hellotelepresence-6. 0 more...
+   5.0 TEL | END SPAN vpn.py:85(connect_sshuttle,sshuttle-wait)    2.4s
+   5.0 TEL | END SPAN vpn.py:62(connect_sshuttle)    2.4s
+   5.0 >>> | Setup complete. Launching your command.
+   5.0 TEL | Everything launched. Waiting to exit...
+   5.0 TEL | BEGIN SPAN runner.py:729(wait_for_exit)
+   5.0 TEL | Main process (bash -c 'INSIDEVAR=insidevalue env')
+   5.0 TEL |  exited with code 0.
+   5.1 TEL | END SPAN runner.py:729(wait_for_exit)    0.1s
+   5.1 >>> | Your process has exited.
+   5.1 TEL | EXITING successful session.
+   5.1 >>> | Exit cleanup in progress
+   5.1 TEL | (Cleanup) Terminate local process
+   5.1 TEL | Local process is already dead (ret=0)
+   5.1 TEL | (Cleanup) Kill BG process [20] sshuttle
+   5.1 TEL | (Cleanup) Unmount remote filesystem
+   5.1 TEL | [34] Running: fusermount -z -u /tmp/tel-w5rdy4iz/fs
+   5.1  20 | >> iptables -t nat -D OUTPUT -j sshuttle-12300
+   5.1  20 | >> iptables -t nat -D PREROUTING -j sshuttle-12300
+   5.1 TEL | [34] ran in 0.01 secs.
+   5.1 TEL | (Cleanup) Kill BG process [17] SSH port forward (socks and proxy poll)
+   5.1 TEL | [17] SSH port forward (socks and proxy poll): exit 0
+   5.1  20 | >> iptables -t nat -F sshuttle-12300
+   5.1 TEL | (Cleanup) Kill Web server for proxy poll
+   5.1  20 | >> iptables -t nat -X sshuttle-12300
+   5.2 TEL | [20] sshuttle: exit -15
+   5.3 TEL | (Cleanup) Kill BG process [16] SSH port forward (exposed ports)
+   5.3 TEL | [16] SSH port forward (exposed ports): exit 0
+   5.3 TEL | (Cleanup) Kill BG process [13] kubectl port-forward
+   5.3 TEL | [13] kubectl port-forward: exit -15
+   5.3 TEL | (Cleanup) Kill BG process [12] kubectl logs
+   5.3 TEL | [12] kubectl logs: exit -15
+   5.3 TEL | Background process (kubectl logs) exited with return code -15. Command was:
+   5.3 TEL |   kubectl --context kind-test --namespace default logs -f tele --container telepresence --tail=10
+   5.3 TEL | 
+   5.3 TEL | Recent output was:
+   5.3 TEL |   2020-10-14T09:10:57+0000 [stdout#info] Set DNS suffix we filter out to: [(b'a', b'sanity', b'check', b'telepresence', b'io', b'c', b'cff-eirini-peace-pods', b'internal')]
+   5.3 TEL |   2020-10-14T09:10:57+0000 [stdout#info] Result for b'hellotelepresence-3.a.sanity.check.telepresence.io.c.cff-eirini-peace-pods.internal' is ['127.0.0.1']
+   5.3 TEL |   2020-10-14T09:10:57+0000 [stdout#info] Set DNS suffix we filter out to: [(b'a', b'sanity', b'check', b'telepresence', b'io', b'c', b'cff-eirini-peace-pods', b'internal'), (b'c', b'cff-eirini-peace-pods', b'internal')]
+   5.3 TEL |   2020-10-14T09:10:57+0000 [stdout#info] Result for b'hellotelepresence-4.c.cff-eirini-peace-pods.internal' is ['127.0.0.1']
+   5.3 TEL |   2020-10-14T09:10:57+0000 [stdout#info] Sanity check: b'hellotelepresence-4.a.sanity.check.telepresence.io'
+   5.3 TEL |   2020-10-14T09:10:57+0000 [stdout#info] Result for b'hellotelepresence-4.a.sanity.check.telepresence.io.c.cff-eirini-peace-pods.internal' is ['127.0.0.1']
+   5.3 TEL |   2020-10-14T09:10:57+0000 [stdout#info] Result for b'hellotelepresence-5.c.cff-eirini-peace-pods.internal' is ['127.0.0.1']
+   5.3 TEL |   2020-10-14T09:10:57+0000 [stdout#info] Sanity check: b'hellotelepresence-5.a.sanity.check.telepresence.io'
+   5.3 TEL |   2020-10-14T09:10:57+0000 [stdout#info] Result for b'hellotelepresence-5.a.sanity.check.telepresence.io.c.cff-eirini-peace-pods.internal' is ['127.0.0.1']
+   5.3 TEL |   2020-10-14T09:10:57+0000 [stdout#info] Result for b'hellotelepresence-6.c.cff-eirini-peace-pods.internal' is ['127.0.0.1']
+   5.3 TEL | (Cleanup) Delete proxy Pod, Service
+   5.3 >>> | Cleaning up Pod, Service
+   5.3 TEL | [35] Running: kubectl --context kind-test --namespace default delete --ignore-not-found --wait=false --selector=telepresence=6b650fd2e0174ee18cf883a08bec0c7b Pod,Service
+   5.3  35 | pod "tele" deleted
+   5.4  35 | service "tele" deleted
+   5.4 TEL | [35] ran in 0.09 secs.
+   5.4 TEL | (Cleanup) Kill sudo privileges holder
+   5.4 TEL | (Cleanup) Stop time tracking
+   5.4 TEL | END SPAN main.py:40(main)    5.3s
+   5.4 TEL | SPAN SUMMARY:
+   5.4 TEL |    5.3s main.py:40(main)
+   5.4 TEL |    0.2s   startup.py:83(set_kube_command)
+   5.4 TEL |    0.1s     1 kubectl config current-context
+   5.4 TEL |    0.1s     2 kubectl --context kind-test version --short
+   5.4 TEL |    0.0s     3 kubectl --context kind-test config view -o json
+   5.4 TEL |    0.1s     4 kubectl --context kind-test api-versions
+   5.4 TEL |    0.0s   5 ssh -V
+   5.4 TEL |    0.0s   6 sudo -n echo -n
+   5.4 TEL |    0.0s   7 sudo iptables --list
+   5.4 TEL |    0.2s   8 kubectl --context kind-test --namespace default get pods telepresence-connecti
+   5.4 TEL |    0.2s   9 kubectl --context kind-test --namespace default create -f -
+   5.4 TEL |    0.7s   remote.py:109(wait_for_pod)
+   5.4 TEL |    0.6s     10 kubectl --context kind-test --namespace default wait --for=condition=ready --
+   5.4 TEL |    0.1s     11 kubectl --context kind-test --namespace default get pod tele -o json
+   5.4 TEL |    0.5s   connect.py:37(connect)
+   5.4 TEL |    0.0s     14 ssh -F /dev/null -oStrictHostKeyChecking=no -oUserKnownHostsFile=/dev/null -o
+   5.4 TEL |    0.2s     15 ssh -F /dev/null -oStrictHostKeyChecking=no -oUserKnownHostsFile=/dev/null -o
+   5.4 TEL |    0.2s   remote_env.py:29(get_remote_env)
+   5.4 TEL |    0.2s     18 kubectl --context kind-test --namespace default exec tele --container telepre
+   5.4 TEL |    0.2s   mount.py:30(mount_remote_volumes)
+   5.4 TEL |    0.2s     19 sshfs -p 44987 -F /dev/null -oStrictHostKeyChecking=no -oUserKnownHostsFile=/
+   5.4 TEL |    2.4s   vpn.py:62(connect_sshuttle)
+   5.4 TEL |    0.0s     cidr.py:113(get_proxy_cidrs)
+   5.4 TEL |    2.4s     vpn.py:85(connect_sshuttle,sshuttle-wait)
+   5.4 TEL |    0.2s       21 python3 -c 'import socket; socket.gethostbyname("hellotelepresence-0")'
+   5.4 TEL |    0.2s       22 python3 -c 'import socket; socket.gethostbyname("hellotelepresence-0.a.sanity
+   5.4 TEL |    0.2s       23 python3 -c 'import socket; socket.gethostbyname("hellotelepresence-1")'
+   5.4 TEL |    0.2s       24 python3 -c 'import socket; socket.gethostbyname("hellotelepresence-1.a.sanity
+   5.4 TEL |    0.2s       25 python3 -c 'import socket; socket.gethostbyname("hellotelepresence-2")'
+   5.4 TEL |    0.2s       26 python3 -c 'import socket; socket.gethostbyname("hellotelepresence-2.a.sanity
+   5.4 TEL |    0.2s       27 python3 -c 'import socket; socket.gethostbyname("hellotelepresence-3")'
+   5.4 TEL |    0.1s       28 python3 -c 'import socket; socket.gethostbyname("hellotelepresence-3.a.sanity
+   5.4 TEL |    0.1s       29 python3 -c 'import socket; socket.gethostbyname("hellotelepresence-4")'
+   5.4 TEL |    0.1s       30 python3 -c 'import socket; socket.gethostbyname("hellotelepresence-4.a.sanity
+   5.4 TEL |    0.0s       31 python3 -c 'import socket; socket.gethostbyname("hellotelepresence-5")'
+   5.4 TEL |    0.0s       32 python3 -c 'import socket; socket.gethostbyname("hellotelepresence-5.a.sanity
+   5.4 TEL |    0.0s       33 python3 -c 'import socket; socket.gethostbyname("hellotelepresence-6")'
+   5.4 TEL |    0.1s   runner.py:729(wait_for_exit)
+   5.4 TEL |    0.0s   34 fusermount -z -u /tmp/tel-w5rdy4iz/fs
+   5.4 TEL |    0.1s   35 kubectl --context kind-test --namespace default delete --ignore-not-found --w
+   5.4 TEL | (Cleanup) Remove temporary directory
+   5.4 TEL | (Cleanup) Save caches
+   6.3 TEL | (sudo privileges holder thread exiting)
