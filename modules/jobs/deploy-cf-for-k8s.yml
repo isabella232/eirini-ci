@@ -14,6 +14,8 @@ jobs:
     trigger: true
   - get: cluster-state
   - get: ci-resources
+  - get: capi-release
+  - get: capi-k8s-release
   - task: download-kubeconfig
     params:
       CLUSTER_NAME: (( grab config.cluster.name ))
@@ -38,7 +40,8 @@ jobs:
         - bash
         - -c
         - (( file "../../inline-tasks/gcp-download-kubeconfig.sh" ))
-  - config:
+  - task: delete-cf
+    config:
       container_limits: {}
       image_resource:
         source:
@@ -55,8 +58,8 @@ jobs:
         - -c
         - (( file "../../inline-tasks/delete-cf-for-k8s.sh" ))
         path: /usr/bin/env
-    task: delete-cf
-  - config:
+  - task: patch-eirini-release
+    config:
       container_limits: {}
       image_resource:
         source:
@@ -76,8 +79,36 @@ jobs:
         - -c
         - (( file "../../inline-tasks/patch-eirini-release-cf-for-k8s.sh" ))
         path: /usr/bin/env
-    task: patch-eirini-release
-  - config:
+  - task: patch-cloud-controller
+    privileged: true
+    input_mapping:
+      cf-for-k8s: patched-cf-for-k8s
+    params:
+      DOCKER_USERNAME: (( grab config.dockerhub.user ))
+      DOCKER_PASSWORD: (( grab config.dockerhub.password ))
+    config:
+      container_limits: {}
+      image_resource:
+        source:
+          repository: eirini/ci
+          username: (( grab config.dockerhub.user ))
+          password: (( grab config.dockerhub.password ))
+        type: docker-image
+      inputs:
+      - name: cf-for-k8s
+      - name: capi-release
+      - name: capi-k8s-release
+      outputs:
+      - name: patched-cf-for-k8s
+      platform: linux
+      run:
+        args:
+        - bash
+        - -c
+        - (( file "../../inline-tasks/patch-cloud-controller.sh" ))
+        path: /usr/bin/env
+  - task: deploy-cf-for-k8s
+    config:
       container_limits: {}
       image_resource:
         source:
@@ -99,7 +130,6 @@ jobs:
         - -c
         - (( file "../../inline-tasks/deploy-cf-for-k8s.sh" ))
         path: /usr/bin/env
-    task: deploy-cf-for-k8s
   public: true
   serial_groups:
   - (( grab config.cluster.name ))

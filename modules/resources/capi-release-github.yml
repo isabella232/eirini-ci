@@ -1,0 +1,7 @@
+resources:
+- name: capi-release
+  type: git
+  icon: git
+  source:
+    branch: master
+    uri: https://github.com/cloudfoundry/capi-release

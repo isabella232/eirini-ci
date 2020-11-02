@@ -9,6 +9,8 @@ spruce:
       - ./config.yml
       - ../../modules/resources/slack.yml
       - ../../modules/resources/cf-for-k8s-github-release.yml
+      - ../../modules/resources/capi-release-github.yml
+      - ../../modules/resources/capi-k8s-release-github.yml
       - ../../modules/resources/cf-smoke-tests.yml
       - ../../modules/resources/ci-resources.yml
       - ../../modules/resources/uaa-ready-event.yml

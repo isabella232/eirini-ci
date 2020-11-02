@@ -1,0 +1,7 @@
+resources:
+- name: capi-k8s-release
+  type: git
+  icon: git
+  source:
+    branch: master
+    uri: https://github.com/cloudfoundry/capi-k8s-release
