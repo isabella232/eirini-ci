@@ -7,21 +7,22 @@ RUN  apt-get update \
        --no-install-recommends \
        apt-transport-https \
        ca-certificates \
+       conntrack \
        curl \
        git \
-       wget \
+       gnupg2 \
+       iptables \
        jq \
+       lsb-release \
+       python3-pip \
+       python3-setuptools \
        shellcheck \
        software-properties-common \
-       lsb-release \
+       sshfs \
+       sudo \
        unzip \
        vim \
-       apt-transport-https \
-       gnupg2 \
-       sshfs \
-       conntrack \
-       iptables \
-       sudo \
+       wget \
   && rm -rf /var/lib/apt/lists/*
 
 # telepresence
@@ -51,3 +52,16 @@ RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add - \
   && echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list \
   && sudo apt update \
   && sudo apt install -y yarn
+
+# pack
+RUN curl -sSL "https://github.com/buildpacks/pack/releases/download/v0.14.2/pack-v0.14.2-linux.tgz" | tar -C "/usr/local/bin/" --no-same-owner -xzv pack
+
+# yq
+RUN pip3 install wheel
+RUN pip3 install yq
+
+# ytt, kapp, etc.
+RUN curl -L https://carvel.dev/install.sh | bash
+
+# docker
+RUN curl -L https://get.docker.com | sh
