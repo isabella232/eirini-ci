@@ -1,0 +1,12 @@
+#@ load("@ytt:data", "data")
+#@ load("@ytt:overlay", "overlay")
+#@ load("/namespaces.star", "system_namespace", "workloads_namespace")
+
+#@overlay/match by=overlay.subset({"kind": "Gateway", "metadata":{"name": "istio-ingressgateway"}})
+---
+spec:
+  servers:
+  #@overlay/match by=overlay.subset({"port":{"name": "https-workloads"}})
+  - hosts:
+    #@overlay/append
+    - #@ workloads_namespace() + '/eirini.cf'

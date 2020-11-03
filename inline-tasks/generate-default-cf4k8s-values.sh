@@ -9,5 +9,3 @@ tar xzvf cf-for-k8s-github-release/source.tar.gz -C .
 sha="$(<cf-for-k8s-github-release/commit_sha)"
 src_folder="cloudfoundry-cf-for-k8s-${sha:0:7}"
 "$src_folder"/hack/generate-values.sh -d "$CLUSTER_NAME".ci-envs.eirini.cf-app.com -g "$PWD/account.json" >default-values-file/values.yml
-# generate-values.sh script above doesn't support setting app_domains so we do it with "sed"
-sed -e '/"ci-envs.eirini.cf-app.com"/a\' -e '  - "eirini.cf"' default-values-file/values.yml
