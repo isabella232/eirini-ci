@@ -27,6 +27,8 @@ spec:
   commonName: eirini.cf
   dnsNames:
   - eirini.cf
+  issuerRef:
+    name: letsencrypt-staging
 ---
 apiVersion: cert-manager.io/v1
 kind: ClusterIssuer
