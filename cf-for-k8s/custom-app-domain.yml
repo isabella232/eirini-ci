@@ -29,6 +29,7 @@ spec:
   - eirini.cf
   issuerRef:
     name: letsencrypt-staging
+    kind: ClusterIssuer
 ---
 apiVersion: cert-manager.io/v1
 kind: ClusterIssuer
