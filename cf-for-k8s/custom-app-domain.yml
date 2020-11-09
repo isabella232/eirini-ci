@@ -12,34 +12,14 @@ spec:
     - #@ workloads_namespace() + '/eirini.cf'
     tls:
       credentialName: eirinidotcf-cert
+
 ---
-apiVersion: cert-manager.io/v1
-kind: Certificate
-metadata:
-  name: eirinidotcf-cert
-  namespace: #@ system_namespace()
-spec:
-  secretName: eirinidotcf-cert
-  commonName: eirini.cf
-  dnsNames:
-  - eirini.cf
-  - #@ "*." + data.values.app_domains[0]
-  issuerRef:
-    name: letsencrypt-staging
-    kind: ClusterIssuer
+#! Exclude istio-system namespace from the generated yaml so that our
+#! letsencrypt secret survives recreation of cf-for-k8s. Rate limit is 5 of same
+#! domain per week
+
+#@ load("@ytt:overlay", "overlay")
+
+#@overlay/match by=overlay.subset({"kind":"Namespace", "metadata":{"name":"istio-system"}})
+#@overlay/remove
 ---
-apiVersion: cert-manager.io/v1
-kind: ClusterIssuer
-metadata:
-  name: letsencrypt-staging
-  namespace: #@ system_namespace()
-spec:
-  acme:
-    email: eirini@cloudfoundry.org
-    server: https://acme-staging-v02.api.letsencrypt.org/directory
-    privateKeySecretRef:
-      name: eirinidotcf-cert
-    solvers:
-    - http01:
-        ingress:
-          class: istio
