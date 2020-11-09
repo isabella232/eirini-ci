@@ -20,11 +20,19 @@ install-cert-manager() {
     --set installCRDs=true
 }
 
+ensure-istio-ns() {
+  if ! kubectl get namespace istio-system; then
+    kubectl create namespace istio-system
+  fi
+}
+
 configure-certs() {
-  key_file=$(mktemp)
-  echo "$DNS_SERVICE_ACCOUNT_JSON" >"$key_file"
-  kubectl create secret generic clouddns-dns01-solver-svc-acct --from-file="$key_file"
-  rm "$key_file"
+  if ! kubectl get secret -n istio-system clouddns-dns01-solver-svc-acct; then
+    key_file=$(mktemp)
+    trap "rm $key_file" RETURN
+    echo "$DNS_SERVICE_ACCOUNT_JSON" >"$key_file"
+    kubectl create secret -n istio-system generic clouddns-dns01-solver-svc-acct --from-file="$key_file"
+  fi
 
   cert_config_file=$(mktemp)
   cat <<EOF >>"$cert_config_file"
@@ -71,4 +79,9 @@ EOF
 }
 
 install-cert-manager
+
+# we've removed istio-system namespace from cf-for-k8s yaml so that letsencrypt
+# certificate survives redeploys
+ensure-istio-ns
+
 configure-certs
