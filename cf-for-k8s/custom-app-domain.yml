@@ -6,16 +6,12 @@
 ---
 spec:
   servers:
-  #@overlay/append
+  #@overlay/match by=overlay.subset({"port":{"name":"https-workloads"}})
   - hosts:
+    #@overlay/append
     - #@ workloads_namespace() + '/eirini.cf'
-    port:
-      name: eirinidotcf-workload
-      number: 443
-      protocol: HTTPS
     tls:
       credentialName: eirinidotcf-cert
-      mode: SIMPLE
 ---
 apiVersion: cert-manager.io/v1
 kind: Certificate
@@ -27,6 +23,7 @@ spec:
   commonName: eirini.cf
   dnsNames:
   - eirini.cf
+  - #@ "*." + data.values.app_domains[0]
   issuerRef:
     name: letsencrypt-staging
     kind: ClusterIssuer
