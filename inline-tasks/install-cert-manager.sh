@@ -2,46 +2,46 @@
 set -euo pipefail
 export GOOGLE_APPLICATION_CREDENTIALS="$PWD/kube/service-account.json"
 export KUBECONFIG="$PWD/kube/config"
+readonly CERT_MANAGER_NAMESPACE="cert-manager"
 
 install-cert-manager() {
-  if ! kubectl get namespace cert-manager; then
-    kubectl create namespace cert-manager
+  if ! kubectl get namespace "$CERT_MANAGER_NAMESPACE"; then
+    kubectl create namespace "$CERT_MANAGER_NAMESPACE"
   fi
 
-  helm init
+  kubectl apply -f ci-resources/k8s-specs/tiller-service-account.yml
+  kubectl apply -f ci-resources/k8s-specs/restricted-psp.yaml
+  helm init --service-account tiller --upgrade --wait
   helm repo add jetstack https://charts.jetstack.io
   helm repo update
   helm upgrade \
     --install \
     cert-manager \
     jetstack/cert-manager \
-    --namespace cert-manager \
+    --namespace "$CERT_MANAGER_NAMESPACE" \
     --version v1.0.4 \
-    --set installCRDs=true
-}
-
-ensure-istio-ns() {
-  if ! kubectl get namespace istio-system; then
-    kubectl create namespace istio-system
-  fi
+    --set installCRDs=true \
+    --wait
 }
 
 configure-certs() {
-  if ! kubectl get secret -n istio-system clouddns-dns01-solver-svc-acct; then
+  local cert_config_file key_file
+  if ! kubectl get secret -n "$CERT_MANAGER_NAMESPACE" clouddns-dns01-solver-svc-acct; then
     key_file=$(mktemp)
-    trap "rm $key_file" RETURN
+    trap "rm -f $key_file" RETURN
     echo "$DNS_SERVICE_ACCOUNT_JSON" >"$key_file"
-    kubectl create secret -n istio-system generic clouddns-dns01-solver-svc-acct --from-file="$key_file"
+    kubectl create secret -n "$CERT_MANAGER_NAMESPACE" generic clouddns-dns01-solver-svc-acct --from-file=key.json="$key_file"
   fi
 
   cert_config_file=$(mktemp)
+  trap "rm -f $cert_config_file" RETURN
   cat <<EOF >>"$cert_config_file"
 ---
 apiVersion: cert-manager.io/v1
 kind: Issuer
 metadata:
   name: letsencrypt-staging
-  namespace: istio-system
+  namespace: "$CERT_MANAGER_NAMESPACE"
 spec:
   acme:
     email: eirini@cloudfoundry.org
@@ -63,7 +63,7 @@ apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
   name: eirinidotcf-cert
-  namespace: istio-system
+  namespace: "$CERT_MANAGER_NAMESPACE"
 spec:
   secretName: eirinidotcf-cert
   commonName: eirini.cf
@@ -75,13 +75,28 @@ spec:
 EOF
 
   kubectl apply -f "$cert_config_file"
-  rm "$cert_config_file"
 }
 
-install-cert-manager
+get-cert-status() {
+  kubectl get certificate eirinidotcf-cert -n "$CERT_MANAGER_NAMESPACE" -o jsonpath='{.status.conditions[?(@.type=="Ready")].status}'
+}
 
-# we've removed istio-system namespace from cf-for-k8s yaml so that letsencrypt
-# certificate survives redeploys
-ensure-istio-ns
+wait-for-certs() {
+  echo "Waiting for cert generation..."
+  for i in {1..60}; do
+    if [[ "$(get-cert-status)" == "True" ]]; then
+      echo "Certs are generated!"
+      return
+    fi
+    echo "Certs not generated. Attempt #$i..."
+    sleep 10
+  done
+}
 
-configure-certs
+main() {
+  install-cert-manager
+  configure-certs
+  wait-for-certs
+}
+
+main

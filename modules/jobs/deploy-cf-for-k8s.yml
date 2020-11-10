@@ -64,27 +64,6 @@ jobs:
       container_limits: {}
       image_resource:
         source:
-          repository: eirini/gcloud
-          username: (( grab config.dockerhub.user ))
-          password: (( grab config.dockerhub.password ))
-        type: docker-image
-      platform: linux
-      inputs:
-      - name: kube
-      params:
-        GCP_PROJECT_ID: (( grab config.gcp.project-id ))
-        DNS_SERVICE_ACCOUNT_JSON: (( grab config.gcp.dns-service-account-json ))
-      run:
-        args:
-        - bash
-        - -c
-        - (( file "../../inline-tasks/install-cert-manager.sh" ))
-        path: /usr/bin/env
-    task: install-cert-manager
-  - config:
-      container_limits: {}
-      image_resource:
-        source:
           repository: relintdockerhubpushbot/cf-for-k8s-ci
           username: (( grab config.dockerhub.user ))
           password: (( grab config.dockerhub.password ))
@@ -117,6 +96,7 @@ jobs:
       - name: kube
       params:
         CLUSTER_NAME: (( grab config.cluster.name ))
+        USE_CERT_MANAGER: (( grab config.cert-manager.enable ))
       platform: linux
       run:
         args:

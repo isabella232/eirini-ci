@@ -29,6 +29,3 @@ jobs:
         - bash
         - -c
         - (( file "../../inline-tasks/gcp-create-cluster.sh" ))
-  - put: (( concat "cluster-" config.cluster.name "-staging-event-created" ))
-    params:
-      bump: major
