@@ -10,16 +10,3 @@ spec:
   - hosts:
     #@overlay/append
     - #@ workloads_namespace() + '/eirini.cf'
-    tls:
-      credentialName: eirinidotcf-cert
-
----
-#! Exclude istio-system namespace from the generated yaml so that our
-#! letsencrypt secret survives recreation of cf-for-k8s. Rate limit is 5 of same
-#! domain per week
-
-#@ load("@ytt:overlay", "overlay")
-
-#@overlay/match by=overlay.subset({"kind":"Namespace", "metadata":{"name":"istio-system"}})
-#@overlay/remove
----
