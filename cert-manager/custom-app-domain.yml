@@ -10,3 +10,10 @@ spec:
   - hosts:
     #@overlay/append
     - #@ workloads_namespace() + '/eirini.cf'
+    port:
+      name: eirinidotcf
+      number: 443
+      protocol: HTTPS
+    tls:
+      credentialName: eirinidotcf-cert
+      mode: SIMPLE

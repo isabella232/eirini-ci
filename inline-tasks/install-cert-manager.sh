@@ -69,7 +69,6 @@ spec:
   commonName: eirini.cf
   dnsNames:
   - eirini.cf
-  - '*.apps.cf4k8s4a8e.ci-envs.eirini.cf-app.com'
   issuerRef:
     name: letsencrypt
 EOF
