@@ -6,9 +6,8 @@
 ---
 spec:
   servers:
-  #@overlay/match by=overlay.subset({"port":{"name":"https-workloads"}})
+  #@overlay/append
   - hosts:
-    #@overlay/append
     - #@ workloads_namespace() + '/eirini.cf'
     port:
       name: eirinidotcf
