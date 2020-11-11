@@ -40,14 +40,14 @@ configure-certs() {
 apiVersion: cert-manager.io/v1
 kind: Issuer
 metadata:
-  name: letsencrypt-staging
+  name: letsencrypt
   namespace: "$CERT_MANAGER_NAMESPACE"
 spec:
   acme:
     email: eirini@cloudfoundry.org
-    server: https://acme-staging-v02.api.letsencrypt.org/directory
+    server: https://acme-v02.api.letsencrypt.org/directory
     privateKeySecretRef:
-      name: letsencrypt-staging-private-key
+      name: letsencrypt-private-key
     solvers:
       - dns01:
           cloudDNS:
@@ -71,7 +71,7 @@ spec:
   - eirini.cf
   - '*.apps.cf4k8s4a8e.ci-envs.eirini.cf-app.com'
   issuerRef:
-    name: letsencrypt-staging
+    name: letsencrypt
 EOF
 
   kubectl apply -f "$cert_config_file"
