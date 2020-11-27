@@ -65,4 +65,29 @@ jobs:
               - bash
               - -c
               - (( file "../../inline-tasks/run-integration-tests.sh" ))
+        - task: upload-code-climate
+          config:
+            platform: linux
+            image_resource:
+              type: docker-image
+              source:
+                repository: eirini/codeclimate-reporter
+                username: (( grab config.dockerhub.user ))
+                password: (( grab config.dockerhub.password ))
+            inputs:
+            - name:  eirini
+            params:
+                CC_TEST_REPORTER_ID: (( grab config.codeclimate.id ))
+            run:
+              path: /usr/bin/env
+              args:
+              - bash
+              - -c
+              - |
+                pushd eirini
+                ./test-reporter format-coverage coverage/*.out -t gocov --output coverage/report.json --prefix "code.cloudfoundry.org/eirini/"
+                ./test-reporter-latest-linux-amd64 upload-coverage -i coverage/report.json
+                popd
+
+  on_failure: (( grab slack-notification.on_failure ))
   on_failure: (( grab slack-notification.on_failure ))
