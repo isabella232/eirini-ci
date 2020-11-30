@@ -15,6 +15,14 @@ resources:
     username: (( grab config.dockerhub.user ))
     password: (( grab config.dockerhub.password ))
 
+- name: codeclimatereporter-image
+  type: docker-image
+  icon: docker
+  source:
+    repository: eirini/codeclimatereporter
+    username: (( grab config.dockerhub.user ))
+    password: (( grab config.dockerhub.password ))
+
 - name: ibmcloud-image
   type: docker-image
   icon: docker

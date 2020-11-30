@@ -23,6 +23,17 @@ jobs:
     params:
       build: telepresence-image-source/images/telepresence
 
+- name: update-codeclimatereporter-image
+  on_failure: (( grab slack-notification.on_failure ))
+  plan:
+  - get: codeclimatereporter-image-source
+    trigger: true
+  - put: codeclimatereporter-image
+    get_params:
+      skip_download: true
+    params:
+      build: codeclimatereporter-image-source/images/codeclimatereporter
+
 - name: update-ibmcloud-image
   on_failure: (( grab slack-notification.on_failure ))
   plan:

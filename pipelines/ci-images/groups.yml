@@ -3,5 +3,6 @@ groups:
   jobs:
   - update-ci-image
   - update-telepresence-image
+  - update-codeclimatereporter-image
   - update-ibmcloud-image
   - update-gcloud-image
