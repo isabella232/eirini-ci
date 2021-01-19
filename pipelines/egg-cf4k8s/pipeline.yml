@@ -20,80 +20,8 @@ resources:
   source:
     branch: master
     uri: https://github.com/cloudfoundry-incubator/eirini-ci
-# - name: jefe
-#   icon: git
-#   type: git
-#   source:
-#     branch: master
-#     uri: https://github.com/herrjulz/jefe
-# - name: eirinidotcf
-#   icon: git
-#   type: git
-#   source:
-#     branch: master
-#     uri: https://github.com/eirini-forks/eirinidotcf
-# - name: every-morning
-#   icon: alarm
-#   type: time
-#   source:
-#     start: 5:00 AM
-#     stop: 6:00 AM
 
 jobs:
-#- name: unclaim-clusters
-#  plan:
-#  - get: every-morning
-#    trigger: true
-#  - task: unclaim
-#    config:
-#      platform: linux
-#      image_resource:
-#        type: docker-image
-#        source:
-#          repository: eirini/ci
-#      params:
-#          JEFE_ADMIN_PASSWORD: ((jefe-admin-pass))
-#          JEFE_UNCLAIM_CLUSTER_URI: (( concat "https://jefe." config.cluster.name "." config.cluster.domain "/envs/unclaim" ))
-#      run:
-#        path: bash
-#        args:
-#        - -c
-#        - |
-#          #!/bin/bash
-#          set -eoux pipefail
-
-#          curl -X PUT -u admin:$JEFE_ADMIN_PASSWORD $JEFE_UNCLAIM_CLUSTER_URI
-
-#  on_failure: (( grab slack-notification.on_failure ))
-# - name: deploy-jefe
-#   serial: true
-#   plan:
-#   - in_parallel:
-#     - get: jefe
-#       trigger: true
-#     - get: eirini-private-config
-#   - task: deploy
-#     config:
-#       platform: linux
-#       image_resource:
-#         type: docker-image
-#         source:
-#           repository: eirini/ci
-#       run:
-#         path: bash
-#         args:
-#         - -c
-#         - (( file "../../inline-tasks/deploy-jefe.sh" ))
-#       params:
-#         JEFE_GITHUB_CLIENT_ID: ((jefe-client-id))
-#         JEFE_GITHUB_SECRET: ((jefe-client-secret))
-#         JEFE_DSN: jefeuser:((jefe-dbuser-pass))@tcp(sl-eu-gb-p05.dblayer.com:19522)
-#         JEFE_O_AUTH_ORG: eirini-forks
-#         JEFE_ADMIN_PASSWORD: ((jefe-admin-pass))
-#       inputs:
-#       - name: jefe
-#       - name: eirini-private-config
-#   on_failure: (( grab slack-notification.on_failure ))
 - name: deploy-postfacto
   serial: true
   plan:
@@ -124,22 +52,6 @@ jobs:
         - bash
         - -c
         - (( file "../../inline-tasks/gcp-download-kubeconfig.sh" ))
-  - task: init-helm
-    config:
-      image_resource:
-        source:
-          repository: eirini/gcloud
-        type: docker-image
-      inputs:
-      - name: ci-resources
-      - name: kube
-      platform: linux
-      run:
-        path: /usr/bin/env
-        args:
-        - bash
-        - -c
-        - (( file "../../inline-tasks/init-helm.sh" ))
 
   - task: helm-install-redis
     config:
@@ -160,6 +72,7 @@ jobs:
       GCP_REGION: (( grab config.gcp.region ))
       GCP_SERVICE_ACCOUNT_JSON: (( grab config.gcp.service-account-json ))
       GCP_ZONE: (( grab config.gcp.zone ))
+
   - task: get-credentials
     config:
       platform: linux
@@ -176,6 +89,7 @@ jobs:
       - name: kube
       outputs:
       - name: redis-password
+
   - task: deploy
     config:
       platform: linux
@@ -195,56 +109,3 @@ jobs:
       - name: redis-password
       PARAMS:
         MYSQL_ADDRESS: ((mysql-address))
-  # on_failure: (( grab slack-notification.on_failure ))
-# - name: deploy-eirinidotcf
-#   serial: true
-#   plan:
-#   - in_parallel:
-#     - get: ci-resources
-#     - get: eirinidotcf
-#       trigger: true
-#     - get: eirini-private-config
-#   - task: deploy-db
-#     config:
-#       platform: linux
-#       image_resource:
-#         type: docker-image
-#         source:
-#           repository: eirini/ibmcloud
-#       inputs:
-#         - name: ci-resources
-#         - name: eirinidotcf
-#       outputs:
-#         - name: db-conf
-#       params:
-#         CLUSTER_NAME: acceptance
-#       run:
-#         path: /usr/bin/env
-#         args:
-#         - bash
-#         - -c
-#         - (( file "../../inline-tasks/deploy-eirinidotcf-db.sh" ))
-#     params:
-#       CLUSTER_NAME: acceptance
-#       IBMCLOUD_ACCOUNT: ((ibmcloud-account))
-#       IBMCLOUD_USER: ((ibmcloud-user))
-#       IBMCLOUD_PASSWORD: ((ibmcloud-password))
-#   - task: deploy-web
-#     config:
-#       platform: linux
-#       image_resource:
-#         type: docker-image
-#         source:
-#           repository: eirini/ci
-#       inputs:
-#         - name: ci-resources
-#         - name: eirinidotcf
-#         - name: eirini-private-config
-#         - name: db-conf
-#       run:
-#         path: /usr/bin/env
-#         args:
-#         - bash
-#         - -c
-#         - (( file "../../inline-tasks/deploy-eirinidotcf.sh" ))
-#   on_failure: (( grab slack-notification.on_failure ))
